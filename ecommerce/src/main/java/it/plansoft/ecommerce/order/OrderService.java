@@ -63,11 +63,12 @@ public class OrderService {
 
         Order order = repository.findById(orderId).get();
 
-        if (order.getStatus() == OrderStatus.APPROVED) {
+        if (order.getStatus() == OrderStatus.APPROVED ||
+                order.getStatus() == OrderStatus.PAYMENT_REFUSED) {
             order.setStatus(OrderStatus.TO_BE_PAYED);
             repository.save(order);
         } else {
-            throw new IllegalStateException("order not approved");
+            throw new IllegalStateException("order state");
         }
 
         return order;
@@ -119,7 +120,6 @@ public class OrderService {
 
             Order order = byGlobalId.get();
             if (order.getStatus() == OrderStatus.TO_BE_PAYED) {
-
                 order.setStatus(OrderStatus.PAYMENT_REFUSED);
                 repository.save(order);
             }
