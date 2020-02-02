@@ -12,10 +12,7 @@ import org.springframework.lang.Nullable;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Currency;
-import java.util.HashMap;
+import java.util.*;
 
 @Entity
 @Table(name = "Orders")
@@ -40,6 +37,9 @@ public class Order {
     @Nullable
     String notes;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<OrderItem> items = new ArrayList<>();
+
     /**
      * Clears all domain events currently held. Usually invoked by the infrastructure in place in Spring Data
      * repositories.
@@ -54,18 +54,35 @@ public class Order {
     @DomainEvents
     protected Collection<Object> domainEvents() {
 
-        if (this.getStatus() == OrderStatus.TO_BE_PAYED) { ;
+        if (this.getStatus() == OrderStatus.CREATED) {
 
-            final Order obj = this;
+            Map<String, Integer> artItems = new HashMap<>();
+
+            getItems().forEach(orderItem -> {
+                artItems.put(orderItem.getCatalogArticle().getName(), orderItem.getQuantity());
+            });
+
+            DomainEvent event = DomainEvent.builder()
+                    .key(this.getGlobalId())
+                    .domainEventType(ECommerceDomainEvent.ORDER_CREATED)
+                    .applicationPayload(new HashMap<String, Object>() {{
+                        put("globalId", getGlobalId());
+                        put("items", artItems);
+                    }})
+                    .build();
+
+            return Collections.singletonList(event);
+
+        } else if (this.getStatus() == OrderStatus.TO_BE_PAYED) { ;
 
             DomainEvent event = DomainEvent.builder()
                     .key(this.getGlobalId())
                     .domainEventType(ECommerceDomainEvent.ORDER_TO_BE_PAYED)
                     .applicationPayload(new HashMap<String, Object>() {{
-                        put("globalId", obj.getGlobalId());
-                        put("customer", obj.getCustomer());
-                        put("currency", obj.getCurrency().getCurrencyCode());
-                        put("granTotal", obj.getGranTotal());
+                        put("globalId", getGlobalId());
+                        put("customer", getCustomer());
+                        put("currency", getCurrency().getCurrencyCode());
+                        put("granTotal", getGranTotal());
                     }})
                     .build();
 

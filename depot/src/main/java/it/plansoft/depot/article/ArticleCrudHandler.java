@@ -14,6 +14,12 @@ public class ArticleCrudHandler {
 
     final Logger logger = LoggerFactory.getLogger(ArticleCrudHandler.class);
 
+    final private ArticleRepository repository;
+
+    public ArticleCrudHandler(ArticleRepository repository) {
+        this.repository = repository;
+    }
+
     @HandleBeforeCreate
     public void onArticleCreation(Article article) {
         logger.info("Creating new Article " + article);
@@ -24,6 +30,7 @@ public class ArticleCrudHandler {
     public void onArticleDelete(Article article) {
         logger.info("Deleting Article " + article);
         article.delete();
+        repository.save(article);
     }
 
     @HandleBeforeSave

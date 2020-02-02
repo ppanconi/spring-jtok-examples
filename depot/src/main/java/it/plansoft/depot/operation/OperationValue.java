@@ -4,7 +4,6 @@ import lombok.Value;
 
 import java.util.List;
 
-
 @Value
 public class OperationValue {
     private String refType;

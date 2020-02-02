@@ -100,7 +100,6 @@ public class Operation extends AbstractAggregateRoot {
                 break;
             }
         }
-        ;
 
         if (placed > 0) {
             /*

@@ -1,9 +1,12 @@
 package it.plansoft.depot.operation;
 
+import com.jtok.spring.subscriber.ExternalDomainEvent;
 import it.plansoft.depot.article.Article;
 import it.plansoft.depot.article.ArticleRepository;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,5 +72,25 @@ public class OperationService {
 
         operationRepository.save(operation);
         return status;
+    }
+
+    @Transactional
+    @EventListener(condition = "#event.name == 'ecommerce.ORDER_CREATED'")
+    public void handleECommerceOrderCreated(ExternalDomainEvent event) {
+
+        List<OperationDetailValue> details = new ArrayList<>();
+
+        JSONObject items = (JSONObject) event.getPayload().get("items");
+        items.keySet().forEach(article ->
+                details.add(new OperationDetailValue(article, - items.getAsNumber(article).intValue())));
+
+        OperationValue operationValue = new OperationValue(
+                event.getName(),
+                event.getKey(),
+                event.getId(),
+                details
+        );
+
+        place(operationValue);
     }
 }
