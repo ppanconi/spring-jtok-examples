@@ -55,16 +55,16 @@ public class Article extends AbstractAggregateRoot {
     /**
      * Create an article handling operation to reduce stock
      *
-     * @param qunatity positive quatity to reduce
+     * @param quantity positive quatity to reduce
      * @return
      */
-    public Optional<Handling> unload(int qunatity, Operation operation) {
+    public Optional<Handling> unload(int quantity, Operation operation) {
 
-        if (qunatity <= 0) {
-            throw new IllegalArgumentException("non positive quantity unload " + qunatity);
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("non positive quantity unload " + quantity);
         }
 
-        if ( getStockQuantity() - qunatity  >= 0  ) {
+        if ( getStockQuantity() - quantity  >= 0  ) {
 
             long ts = System.currentTimeMillis();
 
@@ -72,7 +72,7 @@ public class Article extends AbstractAggregateRoot {
                     Handling.builder()
                         .article(this)
                         .operation(operation)
-                        .quantity( - qunatity)
+                        .quantity( - quantity)
                         .timestamp(ts)
                     .build()
             );

@@ -24,6 +24,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 	maven { url "https://jitpack.io" }
 }
 
@@ -31,7 +32,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-rest'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'com.github.ppanconi:spring-jtok:master-SNAPSHOT'
+//	implementation 'com.github.ppanconi:spring-jtok:master-SNAPSHOT'
+	implementation 'com.jtok:spring-jtok:0.0.1-SNAPSHOT'
 	implementation 'org.springframework.kafka:spring-kafka:2.4.1.RELEASE'
 	implementation 'org.apache.kafka:kafka-clients:2.4.0'
 
